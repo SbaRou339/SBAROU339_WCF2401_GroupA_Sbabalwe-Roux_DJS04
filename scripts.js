@@ -2,6 +2,8 @@
 
 import { books, authors, genres, BOOKS_PER_PAGE } from './data.js';
 import { createBookElement, populateDropdown, updateShowMoreButton, filterBooks, findBookById } from './utils.js';
+import './book-preview.js'; // Import the new book preview component
+
 
 class BookApp {
 
@@ -199,12 +201,9 @@ class BookApp {
         }
 
         if (active) {
+            const bookPreviewElement = document.querySelector('book-preview');
+            bookPreviewElement.book = active;
             document.querySelector('[data-list-active]').open = true;
-            document.querySelector('[data-list-blur]').src = active.image;
-            document.querySelector('[data-list-image]').src = active.image;
-            document.querySelector('[data-list-title]').innerText = active.title;
-            document.querySelector('[data-list-subtitle]').innerText = `${this.authors[active.author]} (${new Date(active.published).getFullYear()})`;
-            document.querySelector('[data-list-description]').innerText = active.description;
         }
     }
 }
