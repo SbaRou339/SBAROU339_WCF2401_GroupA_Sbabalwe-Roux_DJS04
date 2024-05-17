@@ -1,9 +1,8 @@
-// main.js
+// scripts.js
 
 import { books, authors, genres, BOOKS_PER_PAGE } from './data.js';
 import { createBookElement, populateDropdown, updateShowMoreButton, filterBooks, findBookById } from './utils.js';
-import './book-preview.js'; // Import the new book preview component
-
+import './book-preview.js';
 
 class BookApp {
 
@@ -93,10 +92,6 @@ class BookApp {
 
         document.querySelector('[data-header-settings]').addEventListener('click', () => {
             document.querySelector('[data-settings-overlay]').open = true;
-        });
-
-        document.querySelector('[data-list-close]').addEventListener('click', () => {
-            document.querySelector('[data-list-active]').open = false;
         });
 
         document.querySelector('[data-settings-form]').addEventListener('submit', this.handleThemeChange.bind(this));
@@ -191,22 +186,35 @@ class BookApp {
     showBookPreview(event) {
         const pathArray = Array.from(event.path || event.composedPath());
         let active = null;
-
+    
         for (const node of pathArray) {
             if (active) break;
-
+    
             if (node?.dataset?.preview) {
                 active = findBookById(this.books, node.dataset.preview);
             }
         }
-
+    
         if (active) {
+            // Get the book-preview element
             const bookPreviewElement = document.querySelector('book-preview');
-            bookPreviewElement.book = active;
+            
+            // Set the book property of the book-preview element
+            bookPreviewElement.book = {
+                title: active.title,
+                author: active.author,
+                image: active.image,
+                description: active.description
+            };
+            
+            // Open the book preview overlay
             document.querySelector('[data-list-active]').open = true;
         }
     }
+    
 }
+
+
 
 // Initialize the BookApp with data
 const bookApp = new BookApp({ books, authors, genres, booksPerPage: BOOKS_PER_PAGE });

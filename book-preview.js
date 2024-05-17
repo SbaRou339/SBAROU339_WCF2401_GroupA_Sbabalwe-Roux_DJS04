@@ -1,57 +1,30 @@
 // book-preview.js
 
 class BookPreview extends HTMLElement {
-    
-    /**
-     * Constructor for initializing the BookPreview element.
-     * 
-     * @param {type} paramName - description of parameter
-     * @return {type} description of return value
-     */
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
     }
 
-    
-    /**
-     * Calls the render method to render the element.
-     *
-     */
     connectedCallback() {
-        this.render();
+        this.shadowRoot.querySelector('[data-list-close]').addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('close'));
+        });
     }
 
-    /**
-     * Sets the book property of the element and triggers a re-render.
-     *
-     * @param {type} book - The book object to set.
-     * @return {type} Description of the return value.
-     */
     set book(book) {
         this._book = book;
         this.render();
     }
 
-    /**
-     * Getter for the book property.
-     *
-     * @return {type} description of return value
-     */
     get book() {
         return this._book;
     }
 
-    /**
-     * Renders the book information into the shadow DOM.
-     *
-     */
     render() {
-        // If there is no book, return early
         if (!this._book) return;
 
-        // Define the styles for the preview container
-        const styles = `
+        this.shadowRoot.innerHTML = `
             <style>
                 .preview-container {
                     display: flex;
@@ -78,10 +51,6 @@ class BookPreview extends HTMLElement {
                     margin-top: 0.5rem;
                 }
             </style>
-        `;
-
-        // Define the HTML structure for the preview
-        const html = `
             <div class="preview-container">
                 <img class="preview-image" src="${this._book.image}" alt="${this._book.title}">
                 <div class="preview-title">${this._book.title}</div>
@@ -89,9 +58,6 @@ class BookPreview extends HTMLElement {
                 <div class="preview-description">${this._book.description}</div>
             </div>
         `;
-
-        // Set the innerHTML of the shadowRoot to the styles and HTML
-        this.shadowRoot.innerHTML = `${styles}${html}`;
     }
 }
 
