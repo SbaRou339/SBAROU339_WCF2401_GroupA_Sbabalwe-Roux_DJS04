@@ -255,7 +255,11 @@ class BookApp {
    * @return {void} This function does not return anything.
    */
   showBookPreview(event) {
-    const pathArray = Array.from(event.composedPath());
+    if (document.querySelector("book-preview")) {
+        return; 
+    }
+
+    const pathArray = Array.from(event.composedPath() || event.composedPath());
     let active = null;
   
     for (const node of pathArray) {
@@ -278,6 +282,8 @@ class BookApp {
         document.body.removeChild(bookPreview);
       });
     }
+
+    event.stopPropagation();
   }
   
   
