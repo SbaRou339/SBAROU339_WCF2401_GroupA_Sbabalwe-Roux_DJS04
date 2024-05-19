@@ -1,49 +1,86 @@
 class BookPreview extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
-        this.listenersAdded = false; // Flag to track event listener addition
+/**
+ * Initializes a new instance of the class.
+ *
+ * This constructor sets up the shadow DOM for the element and attaches it to the DOM.
+ */
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  /**
+   * Sets the book and authors for the component and triggers a render.
+   *
+   * @param {Object} book - The book object.
+   * @param {Object} authors - The authors object.
+   */
+  set book({ book, authors }) {
+    this._book = book;
+    this._authors = authors;
+    this.render();
+  }
+
+  /**
+   * Get the book object.
+   *
+   * @return {Object} The book object.
+   */
+  get book() {
+    return this._book;
+  }
+
+  /**
+   * Called when the custom element is inserted into a document. This method is responsible for rendering the component.
+   *
+   * @return {void} This function does not return anything.
+   */
+  connectedCallback() {
+    this.render();
+  }
+
+  /**
+   * Adds event listeners to the close button, modal overlay, and modal content.
+   *
+   * @return {void} This function does not return anything.
+   */
+  addEventListeners() {
+    const closeButton = this.shadowRoot.querySelector("[data-close-button]");
+    const modalOverlay = this.shadowRoot.querySelector("[data-modal-overlay]");
+    const modalContent = this.shadowRoot.querySelector(".modal-content");
+
+    if (closeButton && modalOverlay && modalContent) {
+      closeButton.addEventListener("click", this.closeModal.bind(this));
+      modalOverlay.addEventListener("click", this.closeModal.bind(this));
+      modalContent.addEventListener("click", (event) =>
+        event.stopPropagation()
+      );
     }
 
-    set book({ book, authors }) {
-        this._book = book;
-        this._authors = authors;
-        this.render();
-    }
+    this.listenersAdded = true; // Set the flag to true after adding listeners
+  }
 
-    get book() {
-        return this._book;
-    }
+/**
+ * Closes the modal by removing it from the DOM and resetting the flag indicating if listeners are added.
+ *
+ * @return {void} This function does not return anything.
+ */
+  closeModal() {
+    this.remove(); // Remove the modal from the DOM
+    this.listenersAdded = false; // Reset the flag when the modal is closed
+  }
 
-    connectedCallback() {
-        this.render();
-    }
+  /**
+   * Renders the book preview modal with the book details.
+   *
+   * @return {void} This function does not return anything.
+   */
+  render() {
+    if (!this._book || !this._authors) return;
 
-    addEventListeners() {
-        const closeButton = this.shadowRoot.querySelector("[data-close-button]");
-        const modalOverlay = this.shadowRoot.querySelector("[data-modal-overlay]");
-        const modalContent = this.shadowRoot.querySelector(".modal-content");
+    const authorName = `${this._authors[this._book.author]} (${this._book.year})`;
 
-        if (closeButton && modalOverlay && modalContent) {
-            closeButton.addEventListener("click", this.closeModal.bind(this));
-            modalOverlay.addEventListener("click", this.closeModal.bind(this));
-            modalContent.addEventListener("click", (event) => event.stopPropagation());
-        }
-
-        this.listenersAdded = true; // Set the flag to true after adding listeners
-    }
-
-    closeModal() {
-        this.remove(); // Remove the modal from the DOM
-        this.listenersAdded = false; // Reset the flag when the modal is closed
-    }
-
-    render() {
-        if (!this._book || !this._authors) return;
-
-        const authorName = `${this._authors[this._book.author]} (${this._book.year})`;
-
-        this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = `
             <div class="modal-overlay" data-modal-overlay>
                 <div class="modal-content">
                     <div class="preview-container">
@@ -82,6 +119,20 @@ class BookPreview extends HTMLElement {
                     max-height: 80%; /* Set a max-height for the modal content */
                     overflow-y: auto; /* Enable vertical scrolling if content overflows */
                     text-align: center; /* Center align text */
+                }
+                .modal-content::-webkit-scrollbar {
+                    width: 0; /* For WebKit-based browsers */
+                    height: 0;
+                }
+                .modal-content {
+                    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+                    scrollbar-width: none; /* For Firefox */
+                }
+                .modal-content::-webkit-scrollbar-thumb {
+                    background: transparent;
+                }
+                .modal-content::-webkit-scrollbar-track {
+                    background: transparent;
                 }
                 .close-button {
                     background-color: #007bff; /* Blue background color for the button */
@@ -124,8 +175,8 @@ class BookPreview extends HTMLElement {
             </style>
         `;
 
-        this.addEventListeners();
-    }
+    this.addEventListeners();
+  }
 }
 
 customElements.define("book-preview", BookPreview);

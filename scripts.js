@@ -247,10 +247,12 @@ class BookApp {
     this.updateShowMoreButton();
   }
 
+
   /**
    * Handles showing a preview of a book based on user interaction.
    *
    * @param {Event} event - The event triggering the preview action.
+   * @return {void} This function does not return anything.
    */
   showBookPreview(event) {
     const pathArray = Array.from(event.composedPath());
